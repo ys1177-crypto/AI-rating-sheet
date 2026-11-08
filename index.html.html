@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing Sample 평가지</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 왼쪽에 학생 글을 붙여 두고 오른쪽에서 평가. 기준표 자체가 조원 점수 분포도가 된다.
+   Palette: Ch. 18 덱의 플럼 + 슬레이트 */
+:root {
+  --bg: #f6f4f7; --panel: #ffffff; --ink: #2a2230; --muted: #6a6172; --line: #dcd6e0;
+  --plum: #5b2a59; --plum-soft: #efe4ee; --slate: #3f6484; --slate-soft: #e3ebf2;
+  --warn: #9a4a12; --warn-soft: #fbeadb; --ok: #2c6a4f; --ok-soft: #e1f0e8;
+  --r1: #5b2a59; --r2: #3f6484; --r3: #8a5a12; --r4: #2c6a4f; --chip-ink: #ffffff;
+  --sans: "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1b1720; --panel: #252029; --ink: #efe9f2; --muted: #a79dad; --line: #40384a;
+  --plum: #d3a4cf; --plum-soft: #3a2a3b; --slate: #9cbcd8; --slate-soft: #2a3744;
+  --warn: #f0b184; --warn-soft: #43301f; --ok: #93d3b4; --ok-soft: #233a30;
+  --r1: #d3a4cf; --r2: #9cbcd8; --r3: #e0bd7a; --r4: #93d3b4; --chip-ink: #1b1720; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #1b1720; --panel: #252029; --ink: #efe9f2; --muted: #a79dad; --line: #40384a;
+  --plum: #d3a4cf; --plum-soft: #3a2a3b; --slate: #9cbcd8; --slate-soft: #2a3744;
+  --warn: #f0b184; --warn-soft: #43301f; --ok: #93d3b4; --ok-soft: #233a30;
+  --r1: #d3a4cf; --r2: #9cbcd8; --r3: #e0bd7a; --r4: #93d3b4; --chip-ink: #1b1720; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { color-scheme: light dark; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6;
+  padding-block: 20px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 16px; }
+h1 { font-size: 24px; margin: 0; color: var(--plum); line-height: 1.3; text-wrap: balance; }
+h2 { font-size: 16px; margin: 0; }
+p { margin: 0; }
+.lead { color: var(--muted); }
+.top { display: grid; gap: 12px; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.field-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+.tabs, .raters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--slate); outline-offset: 2px; }
+.tab { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 6px 14px; font-weight: 500; }
+.tab[aria-selected="true"] { background: var(--plum); border-color: var(--plum); color: var(--panel); }
+.rater { display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 3px 8px 3px 4px; }
+.rater.on { border-color: var(--plum); box-shadow: inset 0 0 0 1px var(--plum); }
+.rater input { width: 76px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 14px; padding: 2px; }
+.rater button { border: 0; background: transparent; padding: 0; display: flex; }
+.chip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--chip-ink); flex: none; }
+.c0 { background: var(--r1); } .c1 { background: var(--r2); } .c2 { background: var(--r3); } .c3 { background: var(--r4); }
+.cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 16px; align-items: start; }
+.cols > * { min-width: 0; }
+.text { position: sticky; top: calc(12px + env(safe-area-inset-top, 0px)); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; max-height: calc(100vh - 32px); overflow: auto; }
+.text .ctx { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.text .sample { font-size: 15px; line-height: 1.75; }
+.main { display: grid; gap: 16px; }
+section { display: grid; gap: 10px; }
+.step { font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--slate); }
+.hint { font-size: 13px; color: var(--muted); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; background: var(--panel); }
+th, td { border: 1px solid var(--line); vertical-align: top; text-align: left; }
+thead th { background: var(--plum-soft); font-size: 13px; padding: 6px 8px; }
+tbody th { padding: 8px; font-size: 14px; width: 118px; background: var(--panel); }
+tbody th small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.cell { padding: 0; }
+.cell button { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; width: 100%; min-height: 104px; height: 100%; border: 0; background: transparent; text-align: left; padding: 8px; font-size: 13px; line-height: 1.45; }
+.cell button:hover { background: var(--slate-soft); }
+.cell.agreed button { background: var(--plum-soft); box-shadow: inset 0 0 0 2px var(--plum); }
+.marks { display: flex; gap: 3px; min-height: 22px; flex-wrap: wrap; }
+.row-foot td { padding: 6px 8px; background: var(--bg); }
+.foot { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.flag { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); }
+.flag.ok { background: var(--ok-soft); color: var(--ok); }
+.agree { display: flex; flex: none; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.foot > input { flex: 1 1 240px; min-width: 0; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); font: inherit; font-size: 14px; padding: 4px 8px; }
+.firsts { display: grid; gap: 6px; }
+.first { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.first .grades { display: flex; gap: 4px; }
+.first button { width: 32px; height: 28px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); font-weight: 700; }
+.first button[aria-pressed="true"] { background: var(--slate); border-color: var(--slate); color: var(--panel); }
+.fb { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.fb label { display: grid; gap: 4px; font-size: 13px; font-weight: 500; min-width: 0; }
+textarea { width: 100%; min-height: 84px; resize: vertical; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); font: inherit; font-size: 14px; padding: 8px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--plum); background: var(--plum); color: var(--panel); border-radius: 6px; padding: 7px 16px; font-weight: 500; }
+.btn.ghost { background: transparent; color: var(--plum); }
+.points { width: 64px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); font-family: var(--mono); font-size: 14px; padding: 3px 6px; }
+.lv { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.cmp td, .cmp th { padding: 6px 8px; font-size: 14px; vertical-align: middle; }
+.cmp tbody th { width: auto; }
+.cmp input.note { width: 100%; min-width: 180px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--ink); font: inherit; font-size: 13px; padding: 3px 6px; }
+.cmp tfoot td, .cmp tfoot th { background: var(--plum-soft); font-weight: 700; padding: 6px 8px; font-size: 14px; }
+.cmp .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.diff td, .diff th { background: var(--warn-soft); }
+.gap { font-size: 13px; color: var(--warn); font-weight: 500; }
+#sum-gap { font-size: 13px; font-weight: 500; }
+.summary { display: grid; gap: 6px; }
+.item { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+.item .what { color: var(--muted); font-size: 13px; flex: 1 1 180px; min-width: 0; font-family: var(--mono); }
+.pick { display: flex; flex-wrap: wrap; gap: 4px; }
+.pick button { border: 1px solid var(--line); border-radius: 5px; background: var(--panel); font-size: 13px; padding: 3px 9px; }
+.pick button[aria-pressed="true"] { background: var(--slate); border-color: var(--slate); color: var(--panel); }
+.fbin { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.fbin label { display: grid; gap: 4px; font-size: 13px; font-weight: 500; min-width: 0; }
+.counts td, .counts th { text-align: center; }
+.counts td:first-child, .counts th:first-child { text-align: left; }
+.fbt td, .fbt th { padding: 5px 8px; font-size: 13px; vertical-align: middle; }
+.fbt td.mark { text-align: center; font-weight: 700; color: var(--slate); width: 72px; }
+.fbt .off { color: var(--warn); font-weight: 500; font-size: 12px; }
+.fbt tr.one td:first-child { background: var(--slate-soft); }
+.shown { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.dombox { display: grid; gap: 8px; }
+.dombox label { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13px; font-weight: 600; }
+.dombox textarea { min-height: 72px; }
+.fbin { grid-template-columns: minmax(0, 1fr) !important; }
+.fbin textarea { min-height: 260px; }
+.code { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.code output { font-family: var(--mono); font-size: 13px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; overflow-wrap: anywhere; min-width: 0; flex: 1 1 320px; }
+#team { min-height: 90px; font-family: var(--mono); font-size: 13px; }
+#concl { min-height: 120px; }
+.team td, .team th { padding: 5px 8px; font-size: 13px; text-align: center; vertical-align: middle; }
+.team th[scope="row"] { text-align: left; }
+.team td.same { color: var(--ok); font-weight: 600; }
+.team td.split { color: var(--warn); font-weight: 600; }
+.item .ev { flex-basis: 100%; display: grid; gap: 3px; font-size: 13px; }
+.item .ev span b { font-weight: 600; color: var(--slate); margin-right: 6px; }
+.item .ev q { quotes: "“" "”"; }
+.lv.over { color: var(--warn); font-weight: 700; }
+.fbt td.dom { font-size: 12px; color: var(--muted); white-space: nowrap; width: 96px; }
+#msg { font-size: 13px; color: var(--ok); }
+#out { display: none; min-height: 180px; }
+#out.show { display: block; }
+@media (max-width: 880px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .text { position: static; max-height: none; }
+  .fb, .fbin { grid-template-columns: minmax(0, 1fr); }
+  .dombox label { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) { .cell button, .tab { transition: background-color .12s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Writing Sample 평가지</h1>
+    <p class="lead">AI Practice Studio · Session 6. 내 이름을 고른 뒤 기준표에서 가장 가까운 칸을 누름. 점수를 넣으면 Brisk · ChatGPT와 다른 곳이 자동으로 표시됨. 각자 자기 노트북에서 열어 입력. 입력한 내용은 이 컴퓨터의 브라우저에만 남으므로 끝나면 결과 복사로 옮길 것.</p>
+    <div class="bar">
+      <div class="tabs" role="tablist" aria-label="평가할 글">
+        <button class="tab" role="tab" id="tab-1" data-s="1">Sample 1</button>
+        <button class="tab" role="tab" id="tab-2" data-s="2">Sample 2</button>
+      </div>
+      <div class="raters" id="raters" aria-label="평가자"></div>
+    </div>
+  </header>
+
+  <div class="cols">
+    <aside class="text">
+      <p class="ctx">고2 학생들이 수학여행으로 다녀온 호치민시에 대해 쓴 한 문단. 교사의 목적은 쓰기 강점과 약점 진단.</p>
+      <p class="sample" id="sample"></p>
+    </aside>
+
+    <div class="main">
+      <section>
+        <span class="step">1단계 · 각자</span>
+        <h2>첫인상</h2>
+        <p class="hint"><b>평가 기준점 : 한국 고등학교 2학년 EFL 학습자에게 기대할 수 있는 수준 (원어민 기준 아님). 첫인상, 각자 평가, 조별 합의 모두 이 기준점으로 판단.</b> 기준표를 보기 전에 한 번 읽고 바로 고르기. A 매우 잘 씀 · B 잘 썼으나 일부 보완 필요 · C 뜻은 통하나 보완할 곳이 많음 · D 뜻을 알기 어려움</p>
+        <div class="firsts" id="firsts"></div>
+      </section>
+
+      <section>
+        <span class="step">2단계 · 각자 → 3단계 · 조별</span>
+        <h2>영역별 평가 (Analytic, 100점)</h2>
+        <p class="hint">기준점은 위 1단계와 같음. Brisk · ChatGPT 요청문에도 같은 기준점이 들어 있음. 조원의 표시가 두 단계 이상 벌어진 영역만 이야기하기. 점수보다 근거 문장을 먼저 소리 내어 읽기. 합의한 점수는 아래 Part 3 표의 「조 합의」 칸에 넣기.</p>
+        <div class="scroll"><table>
+          <thead><tr><th></th><th>Level 4 Excellent</th><th>Level 3 Good</th><th>Level 2 Fair</th><th>Level 1 Needs improvement</th></tr></thead>
+          <tbody id="rubric"></tbody>
+        </table></div>
+      </section>
+
+      <section>
+        <span class="step">4단계 · 조별</span>
+        <h2>학생에게 줄 피드백</h2>
+        <p class="hint">Sample 1 · 2 두 글 모두 쓰기 (위의 탭으로 글을 바꿈). Brisk · ChatGPT에 준 기준처럼 영역별로 쓰기. 글의 표현을 인용할 때는 큰따옴표(" ")로 묶을 것 — 그래야 AI 피드백과 자동으로 비교됨.</p>
+        <label class="fbin" for="fbpaste" style="font-size:13px;font-weight:500;display:grid;gap:4px">조별 문서에서 한 번에 붙여 넣기 — 「Sample 1」 줄부터 영역 제목째 복사해 붙이면 Sample 1 · 2의 아래 칸이 자동으로 채워짐<textarea id="fbpaste" style="min-height:90px" placeholder="조별 문서의 조 피드백 부분을 통째로 붙여 넣기"></textarea></label>
+        <p class="hint" id="fbpastemsg" role="status"></p>
+        <div class="dombox" id="dombox"></div>
+      </section>
+
+      <section>
+        <span class="step">Part 3 · 토론</span>
+        <h2>사람과 AI, 어디서 달랐는가</h2>
+        <p class="hint">Sample 1 · 2 탭마다 점수만 넣기. 조 합의와 Level이 다른 영역은 자동으로 표시됨.</p>
+        <div class="scroll"><table class="cmp">
+          <thead><tr><th>영역</th><th>조 합의</th><th>내 Brisk</th><th>내 ChatGPT</th><th>다른 점</th></tr></thead>
+          <tbody id="cmp"></tbody>
+          <tfoot id="cmpfoot"></tfoot>
+        </table></div>
+        <h2>조원마다 AI 결과가 같았는가</h2>
+        <p class="hint">같은 요청문인데도 사람마다 AI 점수가 다르게 나올 수 있음. 아래 내 점수 코드를 조원과 나누고(카톡 · 패들렛 등), 조원의 코드를 아래 칸에 붙여 넣으면 자동으로 비교됨.</p>
+        <div class="code"><output id="mycode"></output><button class="btn ghost" id="copycode">내 코드 복사</button></div>
+        <textarea id="team" aria-label="조원의 점수 코드" placeholder="조원의 코드를 한 줄에 하나씩 붙여 넣기"></textarea>
+        <div id="teamcmp"></div>
+        <h2>글로 쓴 피드백은 어디서 달랐는가</h2>
+        <p class="hint">Brisk와 ChatGPT의 피드백을 결과 전체 그대로 붙여 넣으면 4단계의 조 피드백과 영역별로 나란히 정리됨. 따옴표로 인용한 표현을 기준으로 비교함. 「고친 표현 제시 (→)」 수를 보며 학생에게 어디까지 고쳐 줄 것인가도 이야기하기.</p>
+        <div class="fbin">
+          <label for="briskFb">Brisk 피드백 붙여 넣기<textarea id="briskFb" aria-label="Brisk 피드백"></textarea></label>
+          <label for="gptFb">ChatGPT 피드백 붙여 넣기<textarea id="gptFb" aria-label="ChatGPT 피드백"></textarea></label>
+        </div>
+        <div id="fbcmp"></div>
+        <h2>어느 쪽을 조정하고 싶은가</h2>
+        <p class="hint">점수 차이와 글 피드백 차이를 함께 보고 근거를 갖고 고르기. 예 : 내가 못 본 오류를 AI가 짚었다면 내 판단을 조정, AI가 글에 없는 것을 짚었거나 맞는 문장을 틀렸다고 했다면 AI 기준을 조정. 조원과 함께 이야기하되 고르는 것은 각자. AI 결과가 조원마다 달랐다면 그것도 판단에 넣기.</p>
+        <div class="summary" id="summary"></div>
+        <label class="fbin" for="concl" style="font-size:13px;font-weight:500;display:grid;gap:4px">내 결론 — 무엇을 왜 그렇게 조정하고 싶은가 (각자 쓰기)<textarea id="concl"></textarea></label>
+      </section>
+
+      <section>
+        <div class="actions">
+          <button class="btn" id="copy">결과 복사 (두 글 모두)</button>
+          <button class="btn ghost" id="clear">전체 지우기</button>
+          <span id="msg" role="status"></span>
+        </div>
+        <textarea id="out" aria-label="복사할 결과" readonly></textarea>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const SAMPLES = {
+  1: "Last year I went to Ho Chi Minh City. It’s a fascinating place. It is in Vietnam. It is located on a river. They say it was once an important trading center for the French. French effect was everywhere. You should visit there. I saw many building there. Many of them are built in French style. The famous French architect Gustave Eiffel designed a building there. Some cafe serve French-style bread. Many people, especially the older generations, learned French in school. Rich Vietnamese people still speak French today. Hotels and restaurants also have French food. Typically, Vietnamese people have a baguette, yogurt and orange juice for breakfast. All of those are French. The Vietnamese and the French fought, too. Then French left the country. You can see many museums and monuments. They show the country’s long war history. So I think Ho Chi Minh City is a fascinating place to visit.",
+  2: "For travelers to Southeast Asia, there is no more fascinating place to visit than Ho Chi Minh City. Due to historical importance as French trading center in Southeast Asia, French culture’s influences remain pervasive in this city. For example, many inhabitant, especially older generation, learned French in school and can still speak it very well. Vietnamese elite also continue to speak French today. In addition, many cafe, hotel and restaurant serve French-style pastries, along with French item like asparagus and white potato. Typical Vietnamese breakfast would consist baguette, yogurt and orange juice, which are all French item. French influence’s another sign is that many building in the city were built in French style. This can be seen, for example, in Saigon Central Post Office. It has French Gothic style since it was designed and constructed by famous French architect Gustave Eiffel. Numerous museum and monument also document country’s long — and often bloody — history of conflict between Vietnamese and French. Although French eventually left country, cultural influences continue. If you are looking for unique city to visit in Southeast Asia, Ho Chi Minh City is excellent choice."
+};
+const CRITERIA = [
+  { id: "content", name: "Content", max: 30, what: "topic, main idea, development of ideas", bands: {
+    4: [27, 30, "Clear main idea, every sentence supports it, details specific and developed."],
+    3: [22, 26, "Clear main idea, most sentences support it, some details undeveloped."],
+    2: [17, 21, "Main idea only implied, some sentences drift, details listed not explained."],
+    1: [13, 16, "No clear main idea."] } },
+  { id: "organization", name: "Organization", max: 20, what: "opening, logical sequence, closing, cohesion", bands: {
+    4: [18, 20, "Effective opening and closing, logical order, smooth linking."],
+    3: [14, 17, "Opening and closing present, mostly logical, some linking."],
+    2: [10, 13, "Weak opening or closing, list-like, few linking devices."],
+    1: [7, 9, "No clear opening or closing, random order."] } },
+  { id: "grammar", name: "Grammar", max: 25, what: "sentence structure, tense, agreement, word order, articles", bands: {
+    4: [22, 25, "Few errors, varied sentences."],
+    3: [18, 21, "Some errors that rarely affect meaning."],
+    2: [11, 17, "Frequent errors in one or two patterns, meaning mostly clear."],
+    1: [5, 10, "Frequent errors of many kinds, meaning often unclear."] } },
+  { id: "vocabulary", name: "Vocabulary", max: 20, what: "word choice, word form, range", bands: {
+    4: [18, 20, "Precise and varied."],
+    3: [14, 17, "Mostly appropriate, some variety."],
+    2: [10, 13, "Basic, repetitive, some wrong choices."],
+    1: [7, 9, "Very limited."] } },
+  { id: "mechanics", name: "Mechanics", max: 5, what: "spelling, punctuation, capitalization", bands: {
+    4: [5, 5, "Almost no errors."],
+    3: [4, 4, "Occasional errors."],
+    2: [3, 3, "Frequent errors."],
+    1: [2, 2, "Errors hinder reading."] } }
+];
+const SOURCES = [["brisk", "Brisk"], ["gpt", "ChatGPT"]];
+const CHOICES = [["me", "내 판단 조정"], ["ai", "AI 기준 조정"], ["keep", "그대로 둠"]];
+const KEY = "s6-rating-sheet-v5";
+const blank = () => ({ first: {}, levels: {}, agreed: {}, brisk: {}, gpt: {}, choice: {}, fb: {}, briskFb: "", gptFb: "", concl: "" });
+const fresh = () => ({ sample: 1, active: 0, names: ["", "", "", ""], team: "", s: { 1: blank(), 2: blank() } });
+
+function load() {
+  try { const v = JSON.parse(localStorage.getItem(KEY)); if (v && v.s) return v; } catch (e) {}
+  return fresh();
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+let st = load();
+const cur = () => st.s[st.sample];
+const label = i => st.names[i].trim() || (i === 0 ? "나" : "조원 " + (i + 1));
+const initial = i => (st.names[i].trim() ? [...st.names[i].trim()][0] : String(i + 1));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const range = b => (b[0] === b[1] ? String(b[0]) : b[0] + "–" + b[1]);
+const blankValue = v => v === "" || v === undefined || v === null || isNaN(+v);
+
+// 점수 → Level. 점수대 밖이면 null
+function levelOf(c, p) {
+  if (blankValue(p)) return null;
+  for (const l of [4, 3, 2, 1]) { const b = c.bands[l]; if (+p >= b[0] && +p <= b[1]) return l; }
+  return null;
+}
+const lvText = (c, p) => {
+  if (blankValue(p)) return "";
+  if (+p > c.max) return "배점 초과";
+  const l = levelOf(c, p);
+  return l ? "L" + l : "범위 밖";
+};
+const lvSet = (el, c, p) => { const t = lvText(c, p); el.textContent = t; el.classList.toggle("over", t !== "" && !t.startsWith("L")); };
+// 다섯 영역을 모두 적었을 때만 합계를 낸다
+function total(m) {
+  let sum = 0;
+  for (const c of CRITERIA) { if (blankValue(m[c.id])) return null; sum += +m[c.id]; }
+  return sum;
+}
+const signed = n => (n > 0 ? "+" + n : String(n));
+
+// 한 영역의 다른 점 : 조 합의를 기준으로 AI의 Level 차이
+function gaps(s, c) {
+  const a = levelOf(c, s.agreed[c.id]);
+  if (!a) return [];
+  return SOURCES.map(([k, n]) => {
+    const l = levelOf(c, s[k][c.id]);
+    return l ? { k, n, l, d: l - a } : null;
+  }).filter(Boolean);
+}
+const gapText = g => (g.d === 0 ? `${g.n} 같음` : `${g.n} ${Math.abs(g.d)}단계 ${g.d > 0 ? "높음" : "낮음"}`);
+
+function renderRaters() {
+  document.getElementById("raters").innerHTML = st.names.map((n, i) => `
+    <span class="rater ${i === st.active ? "on" : ""}">
+      <button data-rater="${i}" aria-label="${esc(label(i))} 선택" aria-pressed="${i === st.active}"><span class="chip c${i}" id="ch${i}">${esc(initial(i))}</span></button>
+      <input id="name${i}" data-name="${i}" value="${esc(n)}" placeholder="${i === 0 ? "나 (이름)" : "조원 " + (i + 1)}" aria-label="조원 ${i + 1} 이름">
+    </span>`).join("");
+}
+function renderFirsts() {
+  const s = cur();
+  document.getElementById("firsts").innerHTML = st.names.map((_, i) => `
+    <div class="first"><span class="chip c${i}">${esc(initial(i))}</span>
+      <span class="grades">${["A", "B", "C", "D"].map(g => `<button data-first="${i}" data-g="${g}" aria-pressed="${s.first[i] === g}">${g}</button>`).join("")}</span>
+    </div>`).join("");
+}
+function renderRubric() {
+  const s = cur();
+  document.getElementById("rubric").innerHTML = CRITERIA.map(c => {
+    const marks = s.levels[c.id] || {};
+    const vals = Object.values(marks);
+    const spread = vals.length > 1 ? Math.max(...vals) - Math.min(...vals) : 0;
+    const flag = vals.length < 2 ? "" : spread >= 2 ? `<span class="flag">${spread}단계 차이 · 근거부터</span>` : `<span class="flag ok">가까움</span>`;
+    const agreedLevel = levelOf(c, s.agreed[c.id]);
+    const cells = [4, 3, 2, 1].map(b => `
+      <td class="cell ${agreedLevel === b ? "agreed" : ""}"><button data-c="${c.id}" data-b="${b}" aria-label="${c.name} Level ${b}">
+        <span><b>${range(c.bands[b])}</b> ${c.bands[b][2]}</span>
+        <span class="marks">${Object.keys(marks).filter(r => marks[r] === b).map(r => `<span class="chip c${r}">${esc(initial(+r))}</span>`).join("")}</span>
+      </button></td>`).join("");
+    return `<tr><th scope="row">${c.name}<small>${c.max}점</small><small>${c.what}</small></th>${cells}</tr>
+      ${flag ? `<tr class="row-foot"><td colspan="5"><div class="foot">${flag}</div></td></tr>` : ""}`;
+  }).join("");
+}
+function renderCmp() {
+  const s = cur();
+  const cell = (key, name, c) => `<input class="points" id="${key}-${c.id}" data-pt="${key}" data-k="${c.id}" type="number" min="0" max="${c.max}" value="${esc(s[key][c.id] ?? "")}" aria-label="${c.name} ${name} 점수"> <span class="lv" id="lv${key}-${c.id}"></span>`;
+  document.getElementById("cmp").innerHTML = CRITERIA.map(c => `
+    <tr id="row-${c.id}"><th scope="row">${c.name} (${c.max})</th>
+      <td>${cell("agreed", "조 합의", c)}</td><td>${cell("brisk", "Brisk", c)}</td><td>${cell("gpt", "ChatGPT", c)}</td>
+      <td id="gap-${c.id}" class="gap"></td></tr>`).join("");
+  document.getElementById("cmpfoot").innerHTML = `
+    <tr><th>합계 (100)</th><td class="num" id="sum-agreed"></td><td class="num" id="sum-brisk"></td><td class="num" id="sum-gpt"></td><td id="sum-gap"></td></tr>`;
+  updateCmp();
+}
+// 입력 중 포커스가 끊기지 않도록 표 안의 글자만 갱신
+function updateCmp() {
+  const s = cur();
+  const rows = [];
+  for (const c of CRITERIA) {
+    for (const k of ["agreed", "brisk", "gpt"]) lvSet(document.getElementById(`lv${k}-${c.id}`), c, s[k][c.id]);
+    const g = gaps(s, c), differ = g.some(x => x.d !== 0);
+    document.getElementById("row-" + c.id).classList.toggle("diff", differ);
+    document.getElementById("gap-" + c.id).textContent = g.length ? (differ ? g.filter(x => x.d !== 0).map(gapText).join(", ") : "같음") : "";
+    if (differ) rows.push({ c, g, big: Math.max(...g.map(x => Math.abs(x.d))) });
+  }
+  const ta = total(s.agreed);
+  const put = (k, v) => { document.getElementById("sum-" + k).textContent = v === null ? "–" : v; };
+  put("agreed", ta);
+  const parts = [];
+  for (const [k, n] of SOURCES) {
+    const t = total(s[k]); put(k, t);
+    if (t !== null && ta !== null) parts.push(`${n} ${signed(t - ta)}`);
+  }
+  document.getElementById("sum-gap").textContent = parts.length ? "조 합의 대비 " + parts.join(", ") : "";
+  renderSummary(rows);
+}
+// 조정 판단 카드 : 점수의 Level 차이 + 그 영역의 글 피드백 차이(누가 무엇을 짚었나)를 함께 보여 준다
+let fbRowsCache = [];
+function renderSummary() {
+  const s = cur(), box = document.getElementById("summary");
+  const items = [];
+  for (const c of CRITERIA) {
+    const g = gaps(s, c), differ = g.some(x => x.d !== 0);
+    const rows = fbRowsCache.filter(r => r.dom === c.id);
+    const aiOnly = rows.filter(r => !r.who.has(0));
+    const meOnly = rows.filter(r => r.who.has(0) && r.who.size === 1);
+    const over = SOURCES.filter(([k]) => !blankValue(s[k][c.id]) && +s[k][c.id] > c.max).map(([, n]) => n);
+    if (!differ && !aiOnly.length && !meOnly.length && !over.length) continue;
+    items.push({ c, g, differ, aiOnly, meOnly, over, big: differ ? Math.max(...g.map(x => Math.abs(x.d))) : (over.length ? 9 : 0) });
+  }
+  const filled = CRITERIA.some(c => gaps(s, c).length) || fbRowsCache.length;
+  if (!filled) { box.innerHTML = `<p class="hint">점수와 피드백을 넣으면 다른 영역이 근거와 함께 여기에 나타남.</p>`; return; }
+  if (!items.length) { box.innerHTML = `<p class="hint">Level도 같고 한쪽만 짚은 표현도 없음. 합계 차이만 보고 이야기하기.</p>`; return; }
+  items.sort((a, b) => b.big - a.big || b.aiOnly.length - a.aiOnly.length);
+  const who = r => [...r.who].filter(i => i > 0).map(i => FBSOURCES[i][1]).join("·");
+  const list = arr => arr.map(r => `<q>${esc(r.q)}</q>${arr === null ? "" : ""}`).join(" · ");
+  box.innerHTML = items.map(({ c, g, differ, aiOnly, meOnly, over }) => {
+    const lv = levelOf(c, s.agreed[c.id]);
+    const head = (differ ? `조 L${lv} · ${g.map(x => `${x.n} L${x.l}`).join(" · ")}` : (g.length ? "Level 같음" : "점수 미입력"))
+      + (over.length ? ` · ${over.join("·")} 배점 초과 (${c.max}점 만점)` : "");
+    const ev = [];
+    if (aiOnly.length) ev.push(`<span><b>AI만 짚은 표현</b>${aiOnly.map(r => `<q>${esc(r.q)}</q> (${who(r)})`).join(" · ")}</span>`);
+    if (meOnly.length) ev.push(`<span><b>조만 짚은 표현</b>${list(meOnly)}</span>`);
+    return `<div class="item"><b>${c.name}</b><span class="what">${head}</span>
+      <span class="pick" role="group" aria-label="${c.name} 조정 방향">${CHOICES.map(([k, t]) => `<button data-pick="${c.id}" data-v="${k}" aria-pressed="${s.choice[c.id] === k}">${t}</button>`).join("")}</span>
+      ${ev.length ? `<div class="ev">${ev.join("")}</div>` : ""}</div>`;
+  }).join("");
+}
+// 글로 쓴 피드백 비교 : 따옴표 인용을 뽑아 영역별로 누가 무엇을 짚었는지 정리한다
+const DOMS = [["content", "Content", /content|내용/i], ["organization", "Organization", /organi[sz]ation|구성/i],
+  ["grammar", "Grammar", /grammar|문법/i], ["vocabulary", "Vocabulary", /vocabulary|어휘/i], ["mechanics", "Mechanics", /mechanics|표기|철자|구두점/i]];
+const OTHER = /total|합계|총점|종합|questions?|질문/i;
+const FBSOURCES = [["fb", "조"], ["briskFb", "Brisk"], ["gptFb", "ChatGPT"]];
+const norm = t => t.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim();
+// 영역 제목 줄 : 짧고 인용이 없고 영역 이름이 들어 있는 줄
+function headingOf(line) {
+  const raw = line.trim();
+  // 문장으로 끝나는 줄, 인용이 든 줄, 긴 줄은 제목이 아님
+  if (!raw || raw.length > 70 || /["“]/.test(raw) || /[.!?다요]$/.test(raw)) return null;
+  const t = raw.replace(/^[#*\s\d.\-•·)(]+/, "");
+  for (const [id, , re] of DOMS) if (new RegExp("^(" + re.source + ")", "i").test(t)) return id;
+  if (new RegExp("^(" + OTHER.source + ")", "i").test(t)) return "other";
+  return null;
+}
+function quotesIn(text) {
+  // 화살표 뒤의 표현은 고친 말이므로 인용으로 치지 않는다
+  const t = text.replace(/(→|->|=>)\s*["“][^"”\n]*["”]/g, " ");
+  const out = [];
+  for (const m of t.matchAll(/["“]([^"”\n]{2,200})["”]/g)) {
+    const q = m[1].trim();
+    if (/[A-Za-z]/.test(q) && norm(q).length > 1) out.push(q);
+  }
+  return out;
+}
+// 출처 하나를 { 영역: 글 } 로 나눈다
+function sections(key, s) {
+  if (key === "fb") { const o = {}; for (const [id] of DOMS) o[id] = (s.fb || {})[id] || ""; return o; }
+  const o = { pre: "" }; let cur = "pre";
+  for (const line of (s[key] || "").split(/\r?\n/)) {
+    const h = headingOf(line);
+    if (h) cur = h;
+    o[cur] = (o[cur] || "") + line + "\n";
+  }
+  return o;
+}
+const fixes = t => (t.match(/→|->|=>/g) || []).length;
+const asks = t => (t.match(/[?？]/g) || []).length;
+function renderFbCmp() {
+  const s = cur(), box = document.getElementById("fbcmp");
+  if (!(s.briskFb || "").trim() && !(s.gptFb || "").trim()) { box.innerHTML = ""; fbRowsCache = []; renderSummary(); return; }
+  const original = norm(SAMPLES[st.sample]);
+  const rows = [];   // { q, n, dom, who:Set }
+  const whole = [];
+  FBSOURCES.forEach(([k], i) => {
+    const sec = sections(k, s);
+    whole[i] = Object.values(sec).join("\n");
+    for (const [dom, text] of Object.entries(sec)) {
+      for (const q of quotesIn(text)) {
+        const n = norm(q);
+        const hit = rows.find(r => r.n.includes(n) || n.includes(r.n));
+        if (hit) { hit.who.add(i); if (i === 0 || hit.dom === "pre" || hit.dom === "other") hit.dom = DOMS.some(d => d[0] === dom) ? dom : hit.dom; if (n.length < hit.n.length) hit.n = n; if (q.length > hit.q.length) hit.q = q; }
+        else rows.push({ q, n, dom, who: new Set([i]) });
+      }
+    }
+  });
+  const order = [...DOMS.map(d => d[0]), "other", "pre"];
+  rows.sort((a, b) => order.indexOf(a.dom) - order.indexOf(b.dom) || b.who.size - a.who.size);
+  fbRowsCache = rows;
+  const domName = id => (DOMS.find(d => d[0] === id) || [, "기타"])[1];
+  const line = (name, vals) => `<tr><th scope="row">${name}</th>${vals.map(v => `<td class="num">${v}</td>`).join("")}</tr>`;
+  const quoted = FBSOURCES.map((_, i) => rows.filter(r => r.who.has(i)).length);
+  const offText = FBSOURCES.map((_, i) => rows.filter(r => r.who.has(i) && !original.includes(r.n)).length);
+  box.innerHTML = `<div class="scroll"><table class="cmp counts" style="min-width:420px">
+      <thead><tr><th></th>${FBSOURCES.map(([, n]) => `<th>${n}</th>`).join("")}</tr></thead>
+      <tbody>${line("인용한 표현", quoted)}${line("글과 다른 인용", offText)}${line("고친 표현 제시 (→)", whole.map(fixes))}${line("질문", whole.map(asks))}</tbody>
+    </table></div>` + (rows.length ? `<div class="scroll"><table class="fbt" style="min-width:480px">
+      <thead><tr><th>영역</th><th>짚은 표현</th>${FBSOURCES.map(([, n]) => `<th>${n}</th>`).join("")}</tr></thead>
+      <tbody>${rows.slice(0, 40).map(r => `<tr class="${r.who.size === 1 ? "one" : ""}"><td class="dom">${domName(r.dom)}</td><td>${esc(r.q)}${original.includes(r.n) ? "" : ` <span class="off">글과 다름 · 확인</span>`}</td>${FBSOURCES.map((_, i) => `<td class="mark">${r.who.has(i) ? "●" : ""}</td>`).join("")}</tr>`).join("")}</tbody>
+    </table></div>
+    <p class="hint">영역은 각 피드백의 영역 제목을 보고 나눔. 한 곳만 짚은 표현은 색으로 표시됨. 인용이 없는 내용 지적은 이 표에 나오지 않음.</p>` : `<p class="hint">따옴표로 인용한 표현이 없음.</p>`);
+  renderSummary();
+}
+// 점수 코드 : "이름 | S1 B 24 15 19 15 4 | S1 G … | S2 B … | S2 G …"
+const IDS = () => CRITERIA.map(c => c.id);
+function myCode() {
+  const parts = [label(0).replace(/\|/g, " ")];
+  for (const n of [1, 2]) for (const [k, t] of [["brisk", "B"], ["gpt", "G"]]) {
+    const m = st.s[n][k];
+    if (IDS().every(id => !blankValue(m[id]))) parts.push(`S${n} ${t} ${IDS().map(id => +m[id]).join(" ")}`);
+  }
+  return parts.length > 1 ? parts.join(" | ") : "";
+}
+function parseTeam(text) {
+  const people = [];
+  for (const line of (text || "").split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const name = (line.split("|")[0] || "").trim() || "조원";
+    const p = { name, d: {} };
+    for (const m of line.matchAll(/S([12])\s*([BG])\s+((?:\d+\s*){5})/g)) p.d[`${m[1]}${m[2]}`] = m[3].trim().split(/\s+/).map(Number);
+    if (Object.keys(p.d).length) people.push(p);
+  }
+  return people;
+}
+function renderTeam() {
+  const code = myCode();
+  document.getElementById("mycode").textContent = code || "내 Brisk · ChatGPT 점수를 다섯 영역 모두 넣으면 코드가 생김";
+  const box = document.getElementById("teamcmp");
+  const s = cur(), mine = { name: label(0), d: {} };
+  for (const [k, t] of [["brisk", "B"], ["gpt", "G"]]) if (IDS().every(id => !blankValue(s[k][id]))) mine.d[`${st.sample}${t}`] = IDS().map(id => +s[k][id]);
+  const people = [mine, ...parseTeam(st.team)];
+  const tools = [["B", "Brisk"], ["G", "ChatGPT"]];
+  const has = tools.filter(([t]) => people.filter(p => p.d[`${st.sample}${t}`]).length > 1);
+  if (!has.length) { box.innerHTML = `<p class="hint">조원의 코드가 들어오면 Sample ${st.sample}의 점수가 사람별로 나란히 정리됨.</p>`; return; }
+  box.innerHTML = has.map(([t, name]) => {
+    const ps = people.filter(p => p.d[`${st.sample}${t}`]);
+    const rows = CRITERIA.map((c, i) => {
+      const vals = ps.map(p => p.d[`${st.sample}${t}`][i]);
+      const lvls = vals.map(v => levelOf(c, v));
+      const same = lvls.every(l => l === lvls[0]);
+      return `<tr><th scope="row">${c.name}</th>${vals.map((v, j) => `<td class="num">${v} <span class="lv">${lvls[j] ? "L" + lvls[j] : (v > c.max ? "배점 초과" : "범위 밖")}</span></td>`).join("")}<td class="${same ? "same" : "split"}">${same ? "같음" : "Level 다름"}</td></tr>`;
+    }).join("");
+    const totals = ps.map(p => p.d[`${st.sample}${t}`].reduce((a, b) => a + b, 0));
+    return `<div class="scroll"><table class="cmp team" style="min-width:420px"><thead><tr><th>${name} · Sample ${st.sample}</th>${ps.map(p => `<th>${esc(p.name)}</th>`).join("")}<th></th></tr></thead>
+      <tbody>${rows}</tbody><tfoot><tr><th>합계</th>${totals.map(v => `<td class="num">${v}</td>`).join("")}<td>${Math.max(...totals) - Math.min(...totals)}점 차이</td></tr></tfoot></table></div>`;
+  }).join("");
+}
+// 조별 문서의 조 피드백을 Sample별 · 영역별로 나눈다 (제목 줄은 담지 않음)
+function parseGroupFb(text) {
+  const out = {};
+  let samp = st.sample, dom = null;
+  for (const line of (text || "").split(/\r?\n/)) {
+    const t = line.trim();
+    const m = t.match(/^(?:writing\s*)?sample\s*([12])\b/i);
+    if (m && t.length < 40) { samp = +m[1]; dom = null; continue; }
+    const h = headingOf(line);
+    if (h) { dom = h === "other" ? null : h; continue; }
+    if (dom && t) { out[samp] = out[samp] || {}; out[samp][dom] = (out[samp][dom] ? out[samp][dom] + "\n" : "") + t; }
+  }
+  return out;
+}
+function renderDombox() {
+  const s = cur();
+  document.getElementById("dombox").innerHTML = DOMS.map(([id, name]) =>
+    `<label for="fb-${id}">${name}<textarea id="fb-${id}" data-dom="${id}" aria-label="${name} 피드백">${esc((s.fb || {})[id] || "")}</textarea></label>`).join("");
+}
+function render() {
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(+t.dataset.s === st.sample)));
+  document.getElementById("sample").textContent = SAMPLES[st.sample];
+  document.getElementById("briskFb").value = cur().briskFb || "";
+  document.getElementById("gptFb").value = cur().gptFb || "";
+  document.getElementById("team").value = st.team || "";
+  document.getElementById("concl").value = cur().concl || "";
+  renderRaters(); renderFirsts(); renderRubric(); renderCmp(); renderDombox(); renderFbCmp(); renderTeam();
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button");
+  if (!t) return;
+  const s = cur();
+  if (t.dataset.s) { st.sample = +t.dataset.s; }
+  else if (t.dataset.rater !== undefined) { st.active = +t.dataset.rater; renderRaters(); save(); return; }
+  else if (t.dataset.first !== undefined) {
+    const r = t.dataset.first; s.first[r] = s.first[r] === t.dataset.g ? undefined : t.dataset.g;
+  } else if (t.dataset.c) {
+    const m = s.levels[t.dataset.c] = s.levels[t.dataset.c] || {};
+    if (m[st.active] === +t.dataset.b) delete m[st.active]; else m[st.active] = +t.dataset.b;
+    save(); renderRubric(); return;
+  } else if (t.dataset.pick) {
+    s.choice[t.dataset.pick] = s.choice[t.dataset.pick] === t.dataset.v ? undefined : t.dataset.v;
+    save(); updateCmp(); return;
+  } else return;
+  save(); render();
+});
+document.addEventListener("input", e => {
+  const d = e.target.dataset, s = cur(), v = e.target.value;
+  if (d.name !== undefined) {
+    st.names[+d.name] = v; renderTeam();
+    const ch = document.getElementById("ch" + d.name); if (ch) ch.textContent = initial(+d.name);
+    renderFirsts(); renderRubric();
+  }
+  else if (d.pt) { s[d.pt][d.k] = v; updateCmp(); renderTeam(); if (d.pt === "agreed") renderRubric(); }
+  else if (e.target.id === "team") { st.team = v; renderTeam(); }
+  else if (e.target.id === "concl") { s.concl = v; }
+  else if (e.target.id === "fbpaste") {
+    const got = parseGroupFb(v), msg = [];
+    for (const n of [1, 2]) if (got[n]) { st.s[n].fb = Object.assign({}, got[n]); msg.push(`Sample ${n} : ${Object.keys(got[n]).length}개 영역`); }
+    document.getElementById("fbpastemsg").textContent = msg.length ? msg.join(" · ") + " 채움" : "영역 제목 줄(Content 등)을 찾지 못함. 조별 문서의 제목 줄째 복사할 것.";
+    save(); renderDombox(); renderFbCmp(); return;
+  }
+  else if (d.dom) { s.fb = s.fb || {}; s.fb[d.dom] = v; renderFbCmp(); }
+  else if (e.target.id === "briskFb" || e.target.id === "gptFb") { s[e.target.id] = v; renderFbCmp(); }
+  else return;
+  save();
+});
+
+function resultText() {
+  const lines = ["조원: " + st.names.map((_, i) => label(i)).join(", "), ""];
+  const f = v => (blankValue(v) ? "-" : v);
+  for (const n of [1, 2]) {
+    const s = st.s[n];
+    lines.push(`[Writing Sample ${n}]`);
+    for (const c of CRITERIA) {
+      const g = gaps(s, c), ch = CHOICES.find(([k]) => k === s.choice[c.id]);
+      lines.push(`${c.name}: 조 ${f(s.agreed[c.id])} / Brisk ${f(s.brisk[c.id])} / ChatGPT ${f(s.gpt[c.id])}` +
+        (g.some(x => x.d !== 0) ? ` (${g.filter(x => x.d !== 0).map(gapText).join(", ")})` : "") + (ch ? ` → ${ch[1]}` : ""));
+    }
+    lines.push(`합계: 조 ${f(total(s.agreed))} / Brisk ${f(total(s.brisk))} / ChatGPT ${f(total(s.gpt))}`);
+    for (const [id, name] of DOMS) if ((s.fb || {})[id]) lines.push(`조 피드백 · ${name}: ${s.fb[id]}`);
+    if (s.concl) lines.push("내 결론: " + s.concl);
+    if (s.briskFb) lines.push("Brisk 피드백: " + s.briskFb);
+    if (s.gptFb) lines.push("ChatGPT 피드백: " + s.gptFb);
+    lines.push("");
+  }
+  const code = myCode(); if (code) lines.push("점수 코드: " + code);
+  return lines.join("\n");
+}
+document.getElementById("copycode").addEventListener("click", () => {
+  const code = myCode(), out = document.getElementById("mycode");
+  if (!code) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(() => { out.textContent = code + "  (복사됨)"; }, () => {});
+});
+document.getElementById("copy").addEventListener("click", () => {
+  const text = resultText(), out = document.getElementById("out"), msg = document.getElementById("msg");
+  const fallback = () => { out.value = text; out.classList.add("show"); out.select(); msg.textContent = "아래 칸의 내용을 복사해 패들렛에 붙여 넣기"; };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => { msg.textContent = "복사됨. 패들렛에 붙여 넣기"; }, fallback);
+  } else fallback();
+});
+let armed = false;
+document.getElementById("clear").addEventListener("click", e => {
+  const msg = document.getElementById("msg");
+  if (!armed) { armed = true; e.target.textContent = "한 번 더 누르면 지워짐"; return; }
+  armed = false; e.target.textContent = "전체 지우기"; st = fresh(); save(); msg.textContent = ""; render();
+});
+render();
+</script>
